@@ -41,8 +41,8 @@ const now = () => new Date().toISOString();
 const employees = {
   all: () => data.employees.filter(e => e.active !== false).sort((a,b) => a.name.localeCompare(b.name)),
   get: (id) => data.employees.find(e => e.id === id),
-  create: ({ name, email, phone }) => {
-    const emp = { id: nanoid(8), name, email: email || null, phone: phone || null, active: true, created_at: now() };
+  create: ({ name, email, phone, whatsapp_key }) => {
+    const emp = { id: nanoid(8), name, email: email || null, phone: phone || null, whatsapp_key: whatsapp_key || null, active: true, created_at: now() };
     data.employees.push(emp); save(); return emp;
   },
   update: (id, patch) => {

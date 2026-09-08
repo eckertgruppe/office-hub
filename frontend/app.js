@@ -220,6 +220,7 @@ function openEmployeeModal(id = null) {
   $('#employeeForm').reset();
   $('#emp-id').value = '';
   $('#deleteEmpBtn').style.display = 'none';
+  $('#testWhatsAppBtn').style.display = 'none';
   if (id) {
     const emp = employees.find(e => e.id == id);
     if (emp) {
@@ -228,13 +229,28 @@ function openEmployeeModal(id = null) {
       $('#emp-name').value = emp.name;
       $('#emp-email').value = emp.email || '';
       $('#emp-phone').value = emp.phone || '';
+      $('#emp-wakey').value = emp.whatsapp_key || '';
       $('#deleteEmpBtn').style.display = 'inline-block';
+      if (emp.phone && emp.whatsapp_key) $('#testWhatsAppBtn').style.display = 'inline-block';
     }
   } else {
     $('#employeeModalTitle').textContent = 'Neuer Mitarbeiter';
   }
   modal.classList.add('active');
 }
+
+$('#testWhatsAppBtn').onclick = async () => {
+  const id = $('#emp-id').value;
+  if (!id) return;
+  $('#testWhatsAppBtn').textContent = 'Sende...';
+  try {
+    const r = await api(`/employees/${id}/test-whatsapp`, { method: 'POST', body: {} });
+    alert(r.ok ? '✅ Test-Nachricht gesendet! Prüfe WhatsApp.' : '❌ Fehler: ' + (r.body || 'unbekannt'));
+  } catch (e) {
+    alert('❌ Fehler: ' + e.message);
+  }
+  $('#testWhatsAppBtn').textContent = '📱 Test-Nachricht';
+};
 
 $('#newEmployeeBtn').onclick = () => openEmployeeModal();
 $('#cancelEmpBtn').onclick = () => $('#employeeModal').classList.remove('active');
@@ -246,6 +262,7 @@ $('#employeeForm').onsubmit = async (e) => {
     name: $('#emp-name').value,
     email: $('#emp-email').value,
     phone: $('#emp-phone').value,
+    whatsapp_key: $('#emp-wakey').value,
     active: 1,
   };
   if (id) await api('/employees/' + id, { method: 'PUT', body });
@@ -273,6 +290,22 @@ $('#deleteEmpBtn').onclick = async () => {
 $$('.modal').forEach(m => {
   m.onclick = (e) => { if (e.target === m) m.classList.remove('active'); };
 });
+
+// ---------- Manual reminder trigger ----------
+$('#runRemindersBtn').onclick = async () => {
+  if (!confirm('Erinnerungen JETZT an alle Mitarbeiter senden (mit WhatsApp-Setup)?')) return;
+  const btn = $('#runRemindersBtn');
+  btn.textContent = 'Sende...';
+  btn.disabled = true;
+  try {
+    await api('/reminders/run', { method: 'POST', body: {} });
+    alert('✅ Versand läuft im Hintergrund. Prüfe die Empfänger-WhatsApps in 1-2 Min.');
+  } catch (e) {
+    alert('❌ Fehler: ' + e.message);
+  }
+  btn.textContent = '📱 Jetzt erinnern';
+  btn.disabled = false;
+};
 
 // ---------- Init ----------
 (async () => {
