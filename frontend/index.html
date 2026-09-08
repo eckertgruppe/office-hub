@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Office Hub</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">◆</span>
+    <span>Office Hub</span>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-view="dashboard">Dashboard</button>
+    <button class="tab" data-view="items">Tickets & Termine</button>
+    <button class="tab" data-view="employees">Mitarbeiter</button>
+  </nav>
+  <button class="btn-primary" id="newItemBtn">+ Neu</button>
+</header>
+
+<main>
+  <!-- Dashboard -->
+  <section id="view-dashboard" class="view active">
+    <h1>Übersicht</h1>
+    <div class="stats-grid">
+      <div class="stat-card stat-offen"><div class="stat-num" id="stat-offen">0</div><div class="stat-label">Offen</div></div>
+      <div class="stat-card stat-arbeit"><div class="stat-num" id="stat-arbeit">0</div><div class="stat-label">In Arbeit</div></div>
+      <div class="stat-card stat-erledigt"><div class="stat-num" id="stat-erledigt">0</div><div class="stat-label">Erledigt</div></div>
+      <div class="stat-card stat-ueberfaellig"><div class="stat-num" id="stat-ueberfaellig">0</div><div class="stat-label">Überfällig</div></div>
+    </div>
+    <h2>Anstehend</h2>
+    <div id="upcoming-list" class="item-list"></div>
+  </section>
+
+  <!-- Items -->
+  <section id="view-items" class="view">
+    <div class="toolbar">
+      <h1>Tickets & Termine</h1>
+      <div class="filters">
+        <select id="filter-status">
+          <option value="">Alle Status</option>
+          <option value="offen">Offen</option>
+          <option value="in_arbeit">In Arbeit</option>
+          <option value="erledigt">Erledigt</option>
+        </select>
+        <select id="filter-type">
+          <option value="">Alle Typen</option>
+          <option value="ticket">Ticket</option>
+          <option value="termin">Termin</option>
+        </select>
+        <select id="filter-assignee">
+          <option value="">Alle Personen</option>
+        </select>
+      </div>
+    </div>
+    <div id="items-list" class="item-list"></div>
+  </section>
+
+  <!-- Employees -->
+  <section id="view-employees" class="view">
+    <div class="toolbar">
+      <h1>Mitarbeiter</h1>
+      <button class="btn-primary" id="newEmployeeBtn">+ Mitarbeiter</button>
+    </div>
+    <div id="employees-list" class="employee-grid"></div>
+  </section>
+</main>
+
+<!-- Modal: Item -->
+<div class="modal" id="itemModal">
+  <div class="modal-content">
+    <h2 id="itemModalTitle">Neues Ticket / Termin</h2>
+    <form id="itemForm">
+      <input type="hidden" id="item-id" />
+      <label>Typ
+        <select id="item-type" required>
+          <option value="ticket">🎫 Ticket</option>
+          <option value="termin">📅 Termin</option>
+        </select>
+      </label>
+      <label>Titel
+        <input type="text" id="item-title" required maxlength="200" />
+      </label>
+      <label>Beschreibung
+        <textarea id="item-description" rows="4"></textarea>
+      </label>
+      <div class="row">
+        <label>Priorität
+          <select id="item-priority">
+            <option value="niedrig">Niedrig</option>
+            <option value="mittel" selected>Mittel</option>
+            <option value="hoch">Hoch</option>
+          </select>
+        </label>
+        <label>Status
+          <select id="item-status">
+            <option value="offen">Offen</option>
+            <option value="in_arbeit">In Arbeit</option>
+            <option value="erledigt">Erledigt</option>
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <label>Zuständige Person
+          <select id="item-assignee">
+            <option value="">— nicht zugewiesen —</option>
+          </select>
+        </label>
+        <label>Fälligkeit
+          <input type="datetime-local" id="item-due" />
+        </label>
+      </div>
+      <label>Erstellt von
+        <input type="text" id="item-createdby" placeholder="Dein Name" />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-danger" id="deleteItemBtn" style="display:none">Löschen</button>
+        <button type="button" class="btn-ghost" id="cancelItemBtn">Abbrechen</button>
+        <button type="submit" class="btn-primary">Speichern</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Employee -->
+<div class="modal" id="employeeModal">
+  <div class="modal-content">
+    <h2 id="employeeModalTitle">Neuer Mitarbeiter</h2>
+    <form id="employeeForm">
+      <input type="hidden" id="emp-id" />
+      <label>Name
+        <input type="text" id="emp-name" required />
+      </label>
+      <label>Outlook-E-Mail
+        <input type="email" id="emp-email" />
+      </label>
+      <label>WhatsApp-Nummer (mit Ländervorwahl, z.B. +49...)
+        <input type="tel" id="emp-phone" />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-danger" id="deleteEmpBtn" style="display:none">Entfernen</button>
+        <button type="button" class="btn-ghost" id="cancelEmpBtn">Abbrechen</button>
+        <button type="submit" class="btn-primary">Speichern</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
