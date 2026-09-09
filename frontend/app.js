@@ -221,6 +221,7 @@ function openEmployeeModal(id = null) {
   $('#emp-id').value = '';
   $('#deleteEmpBtn').style.display = 'none';
   $('#testWhatsAppBtn').style.display = 'none';
+  $('#testTelegramBtn').style.display = 'none';
   if (id) {
     const emp = employees.find(e => e.id == id);
     if (emp) {
@@ -230,7 +231,9 @@ function openEmployeeModal(id = null) {
       $('#emp-email').value = emp.email || '';
       $('#emp-phone').value = emp.phone || '';
       $('#emp-wakey').value = emp.whatsapp_key || '';
+      $('#emp-tgid').value = emp.telegram_chat_id || '';
       $('#deleteEmpBtn').style.display = 'inline-block';
+      if (emp.telegram_chat_id) $('#testTelegramBtn').style.display = 'inline-block';
       if (emp.phone && emp.whatsapp_key) $('#testWhatsAppBtn').style.display = 'inline-block';
     }
   } else {
@@ -238,6 +241,19 @@ function openEmployeeModal(id = null) {
   }
   modal.classList.add('active');
 }
+
+$('#testTelegramBtn').onclick = async () => {
+  const id = $('#emp-id').value;
+  if (!id) return;
+  $('#testTelegramBtn').textContent = 'Sende...';
+  try {
+    await api(`/employees/${id}/test-telegram`, { method: 'POST', body: {} });
+    alert('✅ Telegram-Testnachricht gesendet!');
+  } catch (e) {
+    alert('❌ Fehler: ' + e.message);
+  }
+  $('#testTelegramBtn').textContent = '✈️ Telegram Test';
+};
 
 $('#testWhatsAppBtn').onclick = async () => {
   const id = $('#emp-id').value;

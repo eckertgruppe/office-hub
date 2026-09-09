@@ -142,16 +142,20 @@
       <label>WhatsApp-Nummer (mit Ländervorwahl, z.B. +49...)
         <input type="tel" id="emp-phone" placeholder="+491721234567" />
       </label>
-      <label>CallMeBot API-Key
-        <input type="text" id="emp-wakey" placeholder="z.B. 1234567" />
+      <label>Telegram Chat-ID
+        <input type="text" id="emp-tgid" placeholder="wird automatisch gefüllt" />
         <small style="text-transform:none;letter-spacing:normal;font-weight:400;color:var(--text-soft);display:block;margin-top:4px;">
-          Wie bekommen? Kontakt <b>+34 621 331 686</b> speichern → per WhatsApp senden:
-          "<i>I allow callmebot to send me messages</i>" → nach ein paar Minuten kommt der Key.
+          👉 Mitarbeiter sucht in Telegram nach <b id="emp-botname">unserem Bot</b> und sendet <b>/start</b>.
+          Chat-ID wird dann automatisch verknüpft (Name muss übereinstimmen).
         </small>
+      </label>
+      <label>CallMeBot API-Key (optional – WhatsApp-Fallback)
+        <input type="text" id="emp-wakey" placeholder="z.B. 1234567 (leer lassen wenn Telegram genutzt wird)" />
       </label>
       <div class="modal-actions">
         <button type="button" class="btn-danger" id="deleteEmpBtn" style="display:none">Entfernen</button>
-        <button type="button" class="btn-ghost" id="testWhatsAppBtn" style="display:none">📱 Test-Nachricht</button>
+        <button type="button" class="btn-ghost" id="testTelegramBtn" style="display:none">✈️ Telegram Test</button>
+        <button type="button" class="btn-ghost" id="testWhatsAppBtn" style="display:none">📱 WhatsApp Test</button>
         <button type="button" class="btn-ghost" id="cancelEmpBtn">Abbrechen</button>
         <button type="submit" class="btn-primary">Speichern</button>
       </div>
