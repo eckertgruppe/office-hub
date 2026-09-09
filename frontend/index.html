@@ -15,13 +15,14 @@
   <nav class="tabs">
     <button class="tab active" data-view="dashboard">Dashboard</button>
     <button class="tab" data-view="items">Tickets & Termine</button>
+    <button class="tab" data-view="calendar">Kalender</button>
+    <button class="tab" data-view="recurring">Wiederkehrend</button>
     <button class="tab" data-view="employees">Mitarbeiter</button>
   </nav>
   <button class="btn-primary" id="newItemBtn">+ Neu</button>
 </header>
 
 <main>
-  <!-- Dashboard -->
   <section id="view-dashboard" class="view active">
     <div class="toolbar">
       <h1>Übersicht</h1>
@@ -37,7 +38,6 @@
     <div id="upcoming-list" class="item-list"></div>
   </section>
 
-  <!-- Items -->
   <section id="view-items" class="view">
     <div class="toolbar">
       <h1>Tickets & Termine</h1>
@@ -61,11 +61,30 @@
     <div id="items-list" class="item-list"></div>
   </section>
 
-  <!-- Employees -->
+  <section id="view-calendar" class="view">
+    <div class="toolbar">
+      <h1 id="cal-title">Kalender</h1>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ghost" id="cal-prev">◀</button>
+        <button class="btn-ghost" id="cal-today">Heute</button>
+        <button class="btn-ghost" id="cal-next">▶</button>
+      </div>
+    </div>
+    <div id="calendar"></div>
+  </section>
+
+  <section id="view-recurring" class="view">
+    <div class="toolbar">
+      <h1>Wiederkehrende Termine</h1>
+      <button class="btn-primary" id="newRecurringBtn" style="background:var(--primary);color:white;">+ Neu</button>
+    </div>
+    <div id="recurring-list" class="item-list"></div>
+  </section>
+
   <section id="view-employees" class="view">
     <div class="toolbar">
       <h1>Mitarbeiter</h1>
-      <button class="btn-primary" id="newEmployeeBtn">+ Mitarbeiter</button>
+      <button class="btn-primary" id="newEmployeeBtn" style="background:var(--primary);color:white;">+ Mitarbeiter</button>
     </div>
     <div id="employees-list" class="employee-grid"></div>
   </section>
@@ -73,16 +92,25 @@
 
 <!-- Modal: Item -->
 <div class="modal" id="itemModal">
-  <div class="modal-content">
+  <div class="modal-content" style="max-width:640px;">
     <h2 id="itemModalTitle">Neues Ticket / Termin</h2>
     <form id="itemForm">
       <input type="hidden" id="item-id" />
-      <label>Typ
-        <select id="item-type" required>
-          <option value="ticket">🎫 Ticket</option>
-          <option value="termin">📅 Termin</option>
-        </select>
-      </label>
+      <div class="row">
+        <label>Typ
+          <select id="item-type" required>
+            <option value="ticket">🎫 Ticket</option>
+            <option value="termin">📅 Termin</option>
+          </select>
+        </label>
+        <label>Status
+          <select id="item-status">
+            <option value="offen">Offen</option>
+            <option value="in_arbeit">In Arbeit</option>
+            <option value="erledigt">Erledigt</option>
+          </select>
+        </label>
+      </div>
       <label>Titel
         <input type="text" id="item-title" required maxlength="200" />
       </label>
@@ -97,31 +125,39 @@
             <option value="hoch">Hoch</option>
           </select>
         </label>
-        <label>Status
-          <select id="item-status">
-            <option value="offen">Offen</option>
-            <option value="in_arbeit">In Arbeit</option>
-            <option value="erledigt">Erledigt</option>
-          </select>
-        </label>
-      </div>
-      <div class="row">
         <label>Zuständige Person
           <select id="item-assignee">
             <option value="">— nicht zugewiesen —</option>
           </select>
         </label>
+      </div>
+      <div class="row">
         <label>Fälligkeit
           <input type="datetime-local" id="item-due" />
         </label>
+        <label>Erstellt von
+          <input type="text" id="item-createdby" placeholder="Dein Name" />
+        </label>
       </div>
-      <label>Erstellt von
-        <input type="text" id="item-createdby" placeholder="Dein Name" />
-      </label>
+
+      <div id="itemExtras" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:8px;">
+        <h3 style="font-size:15px;margin-bottom:12px;color:var(--text-soft);">📎 Anhänge</h3>
+        <div id="attachments-list" style="margin-bottom:8px;"></div>
+        <input type="file" id="attach-file" style="font-size:13px;" />
+
+        <h3 style="font-size:15px;margin:20px 0 12px;color:var(--text-soft);">💬 Kommentare</h3>
+        <div id="comments-list" style="max-height:220px;overflow-y:auto;margin-bottom:12px;"></div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="comment-author" placeholder="Dein Name" style="flex:0 0 30%;" />
+          <input type="text" id="comment-text" placeholder="Kommentar schreiben..." style="flex:1;" />
+          <button type="button" class="btn-primary" id="addCommentBtn" style="background:var(--primary);color:white;">Senden</button>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button type="button" class="btn-danger" id="deleteItemBtn" style="display:none">Löschen</button>
         <button type="button" class="btn-ghost" id="cancelItemBtn">Abbrechen</button>
-        <button type="submit" class="btn-primary">Speichern</button>
+        <button type="submit" class="btn-primary" style="background:var(--primary);color:white;">Speichern</button>
       </div>
     </form>
   </div>
@@ -139,30 +175,100 @@
       <label>Outlook-E-Mail
         <input type="email" id="emp-email" />
       </label>
-      <label>WhatsApp-Nummer (mit Ländervorwahl, z.B. +49...)
+      <label>WhatsApp-Nummer (mit Ländervorwahl)
         <input type="tel" id="emp-phone" placeholder="+491721234567" />
       </label>
       <label>Telegram Chat-ID
         <input type="text" id="emp-tgid" placeholder="wird automatisch gefüllt" />
         <small style="text-transform:none;letter-spacing:normal;font-weight:400;color:var(--text-soft);display:block;margin-top:4px;">
-          👉 Mitarbeiter sucht in Telegram nach <b id="emp-botname">unserem Bot</b> und sendet <b>/start</b>.
-          Chat-ID wird dann automatisch verknüpft (Name muss übereinstimmen).
+          Mitarbeiter sucht Bot in Telegram und sendet <b>/start</b> — dann wird die Chat-ID automatisch verknüpft (Name muss übereinstimmen).
         </small>
       </label>
-      <label>CallMeBot API-Key (optional – WhatsApp-Fallback)
-        <input type="text" id="emp-wakey" placeholder="z.B. 1234567 (leer lassen wenn Telegram genutzt wird)" />
+      <label>CallMeBot API-Key (optional)
+        <input type="text" id="emp-wakey" placeholder="leer bei Telegram" />
       </label>
       <div class="modal-actions">
         <button type="button" class="btn-danger" id="deleteEmpBtn" style="display:none">Entfernen</button>
         <button type="button" class="btn-ghost" id="testTelegramBtn" style="display:none">✈️ Telegram Test</button>
         <button type="button" class="btn-ghost" id="testWhatsAppBtn" style="display:none">📱 WhatsApp Test</button>
         <button type="button" class="btn-ghost" id="cancelEmpBtn">Abbrechen</button>
-        <button type="submit" class="btn-primary">Speichern</button>
+        <button type="submit" class="btn-primary" style="background:var(--primary);color:white;">Speichern</button>
       </div>
     </form>
   </div>
 </div>
 
-<script src="app.js"></script>
+<!-- Modal: Recurring -->
+<div class="modal" id="recurringModal">
+  <div class="modal-content">
+    <h2 id="recModalTitle">Wiederkehrender Termin</h2>
+    <form id="recurringForm">
+      <input type="hidden" id="rec-id" />
+      <div class="row">
+        <label>Typ
+          <select id="rec-type" required>
+            <option value="ticket">🎫 Ticket</option>
+            <option value="termin">📅 Termin</option>
+          </select>
+        </label>
+        <label>Priorität
+          <select id="rec-priority">
+            <option value="niedrig">Niedrig</option>
+            <option value="mittel" selected>Mittel</option>
+            <option value="hoch">Hoch</option>
+          </select>
+        </label>
+      </div>
+      <label>Titel
+        <input type="text" id="rec-title" required />
+      </label>
+      <label>Beschreibung
+        <textarea id="rec-description" rows="3"></textarea>
+      </label>
+      <label>Zuständige Person
+        <select id="rec-assignee"></select>
+      </label>
+      <div class="row">
+        <label>Wiederholung
+          <select id="rec-kind">
+            <option value="daily">Täglich</option>
+            <option value="weekly">Wöchentlich</option>
+            <option value="monthly">Monatlich</option>
+          </select>
+        </label>
+        <label>Uhrzeit
+          <input type="time" id="rec-time" value="08:00" />
+        </label>
+      </div>
+      <div class="row" id="rec-weekday-row" style="display:none;">
+        <label>Wochentag
+          <select id="rec-weekday">
+            <option value="1">Montag</option>
+            <option value="2">Dienstag</option>
+            <option value="3">Mittwoch</option>
+            <option value="4">Donnerstag</option>
+            <option value="5">Freitag</option>
+            <option value="6">Samstag</option>
+            <option value="0">Sonntag</option>
+          </select>
+        </label>
+        <div></div>
+      </div>
+      <div class="row" id="rec-day-row" style="display:none;">
+        <label>Tag im Monat
+          <input type="number" id="rec-day" min="1" max="28" value="1" />
+        </label>
+        <div></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-danger" id="deleteRecBtn" style="display:none">Löschen</button>
+        <button type="button" class="btn-ghost" id="cancelRecBtn">Abbrechen</button>
+        <button type="submit" class="btn-primary" style="background:var(--primary);color:white;">Speichern</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js?v=2"></script>
 </body>
 </html>

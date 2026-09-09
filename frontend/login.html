@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Office Hub – Login</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <div class="modal-content" style="max-width:400px;">
+    <h2>🔐 Office Hub</h2>
+    <form id="loginForm">
+      <label>Passwort
+        <input type="password" id="pw" required autofocus />
+      </label>
+      <div id="err" style="color:var(--danger);font-size:13px;margin-bottom:10px;display:none;"></div>
+      <button type="submit" class="btn-primary" style="background:var(--primary);color:white;width:100%;">Anmelden</button>
+    </form>
+  </div>
+<script>
+document.getElementById('loginForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const password = document.getElementById('pw').value;
+  const res = await fetch('/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
+  if (res.ok) location.href = '/';
+  else {
+    const err = document.getElementById('err');
+    err.textContent = 'Falsches Passwort';
+    err.style.display = 'block';
+  }
+};
+</script>
+</body>
+</html>

@@ -317,6 +317,98 @@ form label textarea {
   color: var(--text-soft);
 }
 
+/* Calendar */
+#calendar {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  overflow-x: auto;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  min-width: 700px;
+}
+.cal-head {
+  font-weight: 600;
+  padding: 8px;
+  text-align: center;
+  color: var(--text-soft);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cal-cell {
+  background: var(--card-alt);
+  border-radius: 8px;
+  min-height: 90px;
+  padding: 8px;
+  font-size: 12px;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+.cal-cell.other { opacity: 0.4; }
+.cal-cell.today {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+.cal-day-num { font-weight: 600; color: var(--text-soft); margin-bottom: 4px; }
+.cal-item {
+  background: var(--primary);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cal-item.termin { background: #10b981; }
+.cal-item.overdue { background: var(--danger); }
+.cal-item.done { background: #94a3b8; text-decoration: line-through; }
+
+/* Comments */
+.comment {
+  background: var(--card-alt);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.comment-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-soft);
+  margin-bottom: 4px;
+}
+.comment-author { font-weight: 600; }
+.comment-text { font-size: 14px; white-space: pre-wrap; word-wrap: break-word; }
+
+/* Attachments */
+.attachment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card-alt);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.attachment a { color: var(--primary); text-decoration: none; flex: 1; }
+.attachment a:hover { text-decoration: underline; }
+.attachment .rm {
+  cursor: pointer;
+  color: var(--text-soft);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.attachment .rm:hover { background: var(--danger); color: white; }
+
 @media (max-width: 640px) {
   .topbar { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
   main { padding: 16px; }
